@@ -7,14 +7,29 @@
 //
 
 import UIKit
+import Combine
 
 class ViewController: UIViewController {
-
+    
+    private var webservice = NewtorkLayer()
+    private var cancellable : AnyCancellable?
+    @IBOutlet weak var tempLabel : UILabel!
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        self.cancellable = self.webservice.fetchWeather()
+            .catch{ _ in  Just(Main.mainPlaceHolder)
+        }
+            
+        .map { "\(String(describing: $0.temp))"}
+        .assign(to: \.text, on: self.tempLabel)
+        
+        
+        self.cancellable?.cancel()
+        
+        
     }
-
-
+    
+    
 }
 
